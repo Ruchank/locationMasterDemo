@@ -1,0 +1,4 @@
+spring:
+  kafka:
+    bootstrap-servers: pkc-6ojv2.us-west4.gcp.confluent.cloud:9092
+    topic: locationtopic_0
