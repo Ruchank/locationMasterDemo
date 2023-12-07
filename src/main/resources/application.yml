@@ -1,4 +1,29 @@
 spring:
+  r2dbc:
+    url: r2dbc:postgresql://locationpostgre.postgres.database.azure.com:5432/postgres?sslmode=require
+    username: postgresqladmin
+    password: Password123#
+   # url: r2dbc:postgresql://locationpostgre.postgres.database.azure.com:5432
+   # sslmode: require
+   # username: postgresqladmin
+   # password: Password123#
+   # initialization-mode: always
+  logging:
+    level:
+      org.springframework.data.r2dbc: Debug
   kafka:
     bootstrap-servers: pkc-6ojv2.us-west4.gcp.confluent.cloud:9092
     topic: locationtopic_0
+    consumer:
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      groupId: ConsumerGroup1
+logging:
+  level:
+    web: INFO
+server.port: 8081
+
+
+
+
+
