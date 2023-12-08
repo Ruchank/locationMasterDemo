@@ -18,6 +18,8 @@ spring:
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       groupId: ConsumerGroup1
+spring.kafka.properties.sasl.jaas.config: org.apache.kafka.common.security.plain.PlainLoginModule   required username='R4ZFU7GINQIOXYZH'   password='Y2LE/4zY0YPicNYZ9DJPhXylOvRbQTZ67F5ykMub0+wtqlhMPlqM48jWtK47lmup';
+spring.kafka.properties.security.protocol: SASL_SSL
 logging:
   level:
     web: INFO
