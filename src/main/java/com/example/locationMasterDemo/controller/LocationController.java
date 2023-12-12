@@ -9,17 +9,17 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @RestController
-@RequestMapping("/location/search")
+@RequestMapping("/location")
 
 public class LocationController {
     @Autowired
     private LocationService locationService;
 
-    @PostMapping("/loadJson")
+  /*  @PostMapping("/loadJson")
     public Mono<Void> loadJson(@RequestBody String message) {
         return locationService.saveLocation(message);
     }
-
+*/
     @GetMapping("/byName/{name}")
     public Flux<LocationEntity> searchByName(@PathVariable("name") String name) throws Exception {
         if(name==null){

@@ -1,6 +1,6 @@
 spring:
   r2dbc:
-    url: r2dbc:postgresql://locationpostgre.postgres.database.azure.com:5432/postgres?sslmode=require
+    url: r2dbc:postgresql://locationpostgre.postgres.database.azure.com:5432/postgres?currentSchema=locationschema&sslmode=require
     username: postgresqladmin
     password: Password123#
    # url: r2dbc:postgresql://locationpostgre.postgres.database.azure.com:5432
@@ -11,19 +11,26 @@ spring:
   logging:
     level:
       org.springframework.data.r2dbc: Debug
-  kafka:
-    bootstrap-servers: pkc-6ojv2.us-west4.gcp.confluent.cloud:9092
-    topic: locationtopic_0
-    consumer:
-      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      groupId: ConsumerGroup1
-spring.kafka.properties.sasl.jaas.config: org.apache.kafka.common.security.plain.PlainLoginModule   required username='R4ZFU7GINQIOXYZH'   password='Y2LE/4zY0YPicNYZ9DJPhXylOvRbQTZ67F5ykMub0+wtqlhMPlqM48jWtK47lmup';
-spring.kafka.properties.security.protocol: SASL_SSL
+kafka:
+  bootstrap-servers: pkc-6ojv2.us-west4.gcp.confluent.cloud:9092
+  topic: locationtopic_0
+  groupId: consumergrp1
+  consumer:
+    group.id: consumergrp1
+    key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    value-deserializer: org.springframework.kafka.support.deserializer.JsonDeserializer
+
+
+kafka.sasl.mechanism: PLAIN
+kafka.security.protocol: SASL_SSL
+kafka.sasl.jaas.config: org.apache.kafka.common.security.plain.PlainLoginModule  required username="R4ZFU7GINQIOXYZH"  password="Y2LE/4zY0YPicNYZ9DJPhXylOvRbQTZ67F5ykMub0+wtqlhMPlqM48jWtK47lmup";
+
 logging:
   level:
-    web: INFO
+    web: DEBUG
+    io.r2dbc: INFO
 server.port: 8081
+
 
 
 

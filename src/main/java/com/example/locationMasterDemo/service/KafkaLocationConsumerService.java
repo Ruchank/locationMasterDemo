@@ -1,6 +1,8 @@
 package com.example.locationMasterDemo.service;
 
+import com.example.locationMasterDemo.model.LocationEntity;
 import com.example.locationMasterDemo.repository.LocationRepository;
+import io.r2dbc.postgresql.codec.Json;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,32 +11,36 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.kafka.annotation.EnableKafka;
-import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.reactive.ReactiveKafkaConsumerTemplate;
+import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
+
+import java.util.UUID;
+
 @EnableKafka
+@Component
 @Slf4j
 public class KafkaLocationConsumerService {
 
     Logger log = LoggerFactory.getLogger(KafkaLocationConsumerService.class);
 
-    @Value(value = "${spring.kafka.topic}")
+    @Value(value = "${kafka.topic}")
     private String topic;
 
     @Autowired
-    private final LocationService locationService;
+    private final LocationRepository locationRepository;
 
     @Autowired
     private final ReactiveKafkaConsumerTemplate <String, String> reactiveKafkaConsumerTemplate;
 
-    public KafkaLocationConsumerService(LocationService locationService, ReactiveKafkaConsumerTemplate <String, String>  reactiveKafkaConsumerTemplate) {
-        this.locationService = locationService;
+    public KafkaLocationConsumerService(LocationRepository locationRepository, ReactiveKafkaConsumerTemplate<String, String> reactiveKafkaConsumerTemplate) {
+      //  this.locationService = locationService;
+        this.locationRepository = locationRepository;
         this.reactiveKafkaConsumerTemplate = reactiveKafkaConsumerTemplate;
     }
 
-  // @KafkaListener(topics = "${spring.kafka.topic}", groupId = "${spring.kafka.consumer.groupId}")
-  @KafkaListener(topics = "locationtopic_0", groupId = "ConsumerGroup1")
-  public Flux<Void> consumerMsg() {
+    @EventListener(ApplicationStartedEvent.class)
+    public Flux<LocationEntity> consumerMsg() {
         log.info("Inside consumer");
         return reactiveKafkaConsumerTemplate.receiveAutoAck()
                 .doOnNext(consumerRecord -> log.info("received key={}, value={} from topic={}, offset={}",
@@ -43,9 +49,10 @@ public class KafkaLocationConsumerService {
                         consumerRecord.topic(),
                         consumerRecord.offset())
                 )
-                .flatMap(consumerRecord -> locationService.saveLocation(consumerRecord.value()))
-                .doOnNext(employee -> log.info("successfully consumed {}={}", employee, employee))
-                .doOnError(throwable -> log.error("something bad happened while consuming : {}", throwable.getMessage()));
+                .flatMap(consumerRecord -> locationRepository.save(new LocationEntity(UUID.randomUUID(),Json.of(consumerRecord.value())))
+                .doOnNext(location -> log.info("successfully consumed {}={}", location, location))
+                .doOnError(throwable -> log.error("something bad happened while consuming : {}", throwable.getMessage())));
     }
+
 
 }
